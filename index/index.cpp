@@ -707,24 +707,6 @@ int main(int argc, char **argv)
 				}					
 			}
 		}
-/* Kasai et al algorithm for O(n)-time LCP construction */
-INT LCParray ( unsigned char * text, INT n, INT * SA, INT * ISA, INT * LCP )
-{
-        INT i=0, j=0;
-
-        LCP[0] = 0;
-        for ( i = 0; i < n; i++ ) // compute LCP[ISA[i]]
-                if ( ISA[i] != 0 )
-                {
-                        if ( i == 0) j = 0;
-                        else j = (LCP[ISA[i-1]] >= 2) ? LCP[ISA[i-1]]-1 : 0;
-                        while ( text[i+j] == text[SA[ISA[i]-1]+j] )
-                                j++;
-                        LCP[ISA[i]] = j;
-                }
-        return ( 1 );
-}
-
 		else //otherwise search the left part to get a smaller interval on LSA
 		{
 			string left_pattern = pattern.substr(0, j+1);
