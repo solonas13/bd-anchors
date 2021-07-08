@@ -16,4 +16,4 @@ Bidirectional String Anchors: a New String Sampling Mechanism.
 ESA 2021
 ```
 
-<b>License</b>: GNU GPLv3 License; Copyright (C) 2014 Grigorios Loukides and Solon P. Pissis.
+<b>License</b>: GNU GPLv3 License; Copyright (C) 2021 Grigorios Loukides and Solon P. Pissis.
