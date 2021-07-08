@@ -41,7 +41,54 @@ using namespace std;
 #include <sdsl/bit_vectors.hpp>                                   // include header for bit vectors
 using namespace sdsl;
 
-/* Kasai et al algorithm for LCP construction */
+
+/* Booth's O(n)-time algorithm -- slightly adapted for efficiency */
+INT minlexrot( string &X, INT *f, INT n)
+{  
+	INT n_d = n<<1;
+  	for(INT i = 0; i < n_d; ++i)	f[i] = (INT) -1;
+
+  	unsigned char * seq = (unsigned char *) X.c_str();
+  	INT k = 0;
+  	for (INT j = 1; j < n_d; ++j)
+  	{
+                unsigned char sj = seq[j%n];
+                INT i = f[j - k - 1];
+                while (i != (INT)-1 && sj != seq[(k + i + 1)%n])
+                {
+                        if (sj < seq[(k + i + 1)%n])        k = j - i - 1;
+                        i = f[i];
+                }
+				
+                if (i == (INT) - 1 && sj != seq[(k + i + 1)%n])
+                {
+                        if (sj < seq[(k+i+1)%n])    k = j;
+                        f[j - k] = -1;
+                }
+                else
+                        f[j - k] = i + 1;
+   	}
+   	return k;
+}
+
+/* Computes the bd-anchors of a string of length n in O(n.ell) time */
+void fast_anchors(string &whole_string, unordered_set<INT> &my_map, INT ell)
+{
+	INT whole_string_len=whole_string.size();
+   	INT start_pos = 0;
+
+        INT *f = new INT[ell<<1];
+	while( (start_pos + ell) <= whole_string_len )
+  	{
+		string string_in_win = whole_string.substr(start_pos,ell);
+		INT anchor_pos = start_pos + minlexrot(string_in_win,f,ell);
+	 	my_map.insert(anchor_pos);
+     		start_pos = start_pos + 1;
+  	}
+	delete []f;
+}
+
+/* Kasai et al algorithm for O(n)-time LCP construction */
 INT LCParray ( unsigned char * text, INT n, INT * SA, INT * ISA, INT * LCP )
 {
         INT i=0, j=0;
@@ -56,90 +103,11 @@ INT LCParray ( unsigned char * text, INT n, INT * SA, INT * ISA, INT * LCP )
                                 j++;
                         LCP[ISA[i]] = j;
                 }
-
         return ( 1 );
 }
 
 
-/* Booth's O(n)-time algorithm */
-INT minlexrot( string& X, INT *f, INT n)
-{  
-  INT n_d=n<<1;
-  for(INT i=0;i<n_d;++i)
-        f[i]=(INT)-1;
-
-  unsigned char * seq = (unsigned char *) X.c_str();
-  INT k=0;
-  for (INT j = 1; j < n_d; ++j)
-  {
-                unsigned char sj = seq[j%n];
-                INT i = f[j - k - 1];
-                while (i != (INT)-1 && sj != seq[(k + i + 1)%n])
-                {
-                        if (sj < seq[(k + i + 1)%n])        k = j - i - 1;
-                        i = f[i];
-                }
-				
-                if (i==(INT)-1 && sj != seq[(k + i + 1)%n])
-                {
-                        if (sj < seq[(k+i+1)%n])    k = j;
-                        f[j - k] = -1;
-                }
-                else
-                        f[j - k] = i + 1;
-   }
-   return k;
-
-}
-
-INT minlexrotf( unsigned char *X, INT *f, INT n)
-{  
-  const INT n_d=n<<1;
-  for(INT i=0;i<n_d;++i)
-        f[i]=(INT)-1;
-
-  INT k=0;
-  for (INT j = 1; j < n_d; ++j)
-  {
-                const unsigned char sj = X[j%n];
-		const INT j_minus_1=j-1;
-                INT i = f[j_minus_1-k];
-                while (i != (INT)-1 && sj != X[(k + i + 1)%n])
-                {
-                        if (sj < X[(k + i + 1)%n])        k = j_minus_1- i;
-                        i = f[i];
-                }
-				
-                if (i==(INT)-1 && sj != X[(k + i + 1)%n])
-                {
-                        if (sj < X[(k+i+1)%n])    k = j;
-                        f[j - k] = -1;
-                }
-                else
-                        f[j - k] = i + 1;
-   }
-   return k;
-
-}
-
-/* Computes the bd-anchors of a string of length n in O(wn) time */
-void fast_anchors(string &whole_string, unordered_set<INT> &my_map, INT w)
-{
-	INT whole_string_len=whole_string.size();
-   	INT start_pos = 0;
-
-        INT *f=new INT[w<<1];
-	while( (start_pos + w) <= whole_string_len )
-  	{
-		string string_in_win = whole_string.substr(start_pos,w);
-		INT anchor_pos = start_pos + minlexrot(string_in_win,f, w);
-	 	my_map.insert(anchor_pos);
-     		start_pos = start_pos + 1;
-  	}
-	delete []f;
-}
-
-/* Constructs the right compacted trie given the anchors and the SA of the whole string */
+/* Constructs the right compacted trie given the anchors and the SA of the whole string in O(n) time */
 void right_compacted_trie ( unordered_set<INT> &anchors, INT * SA, INT * LCP, INT n, INT * RSA, INT * RLCP, unordered_map<INT,INT> &invRSA, INT g )
 {
 	INT ii = 0; //this is the index over RSA[o..g-1] and the RLCP[0..g-1], where g is the number of anchors
@@ -173,7 +141,7 @@ void right_compacted_trie ( unordered_set<INT> &anchors, INT * SA, INT * LCP, IN
 	}
 }
 
-/* Constructs the left compacted trie given the anchors and the SA of the whole string */
+/* Constructs the left compacted trie given the anchors and the SA of the whole string in O(n) time */
 void left_compacted_trie ( unordered_set<INT> &anchors, INT * SA, INT * LCP, INT n, INT * RSA, INT * RLCP, unordered_map<INT,INT> &invRSA, INT g )
 {
 	INT ii = 0;
@@ -207,7 +175,7 @@ void left_compacted_trie ( unordered_set<INT> &anchors, INT * SA, INT * LCP, INT
 	}
 }
 
-/* A fast RMQ data structure for Manber & Myers algorithm: construct the recursion tree over array arr; at each node (i,j) of the tree we maintain the minimum value in arr[i+1..j] */
+/* RMQ data structure for Manber & Myers algorithm: construct the recursion tree over array arr; at each node (i,j) of the tree we maintain the minimum value in arr[i+1..j] */
 INT fast_RMQ ( INT * arr, INT L, INT R, INT n, std::unordered_map<pair<INT,INT>, INT, boost::hash<pair<INT,INT> >> &rmq )
 {
 	if ( R - L > 1 ) // Internal nodes
@@ -712,9 +680,8 @@ int main(int argc, char **argv)
   		}
 		//num_of_patterns++;
 		
-		unsigned char* first_window = (unsigned char*) pattern.substr(0, ell).c_str();
-		
-  		INT j = minlexrotf( first_window, f, ell );
+		string first_window = pattern.substr(0, ell).c_str();
+  		INT j = minlexrot( first_window, f, ell );
   		
 		if ( pattern.size() - j >= j ) //if the right part is bigger than the left part then search the right part to get a smaller interval on RSA
 		{
@@ -740,7 +707,7 @@ int main(int argc, char **argv)
 				}					
 			}
 		}
-		else //otherise search the left part to get a smaller interval on LSA
+		else //otherwise search the left part to get a smaller interval on LSA
 		{
 			string left_pattern = pattern.substr(0, j+1);
 			reverse(left_pattern.begin(), left_pattern.end());
