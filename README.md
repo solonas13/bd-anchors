@@ -1,9 +1,9 @@
 bd-anchors: Bidirectional String Anchors
 ===
 
-Bidirectional string anchors (bd-anchors, for short) is a new string sampling mechanism. Given a positive integer <b>ell</b>, our mechanism selects the lexicographically smallest rotation in every sliding  window of length <b>ℓ</b>. 
+Bidirectional string anchors (bd-anchors, for short) is a new string sampling mechanism. Given a positive integer <b>ℓ</b>, our mechanism selects the lexicographically smallest rotation in every sliding  window of length <b>ℓ</b>. 
 
-Bd-anchors samples are approximately uniform, locally consistent, and computable in linear time --- our current implementation supports <b>O(n.ell)</b>-time computation, where <b>n</b> is the length of the input text. 
+Bd-anchors samples are approximately uniform, locally consistent, and computable in linear time --- our current implementation supports <b>O(nℓ)</b>-time computation, where <b>n</b> is the length of the input text. 
 
 Our experiments using several datasets demonstrate that the bd-anchors sample sizes decrease proportionally to <b>ell</b>; and that these sizes are competitive to or smaller than the minimizers sample sizes using the analogous sampling parameters.
 
