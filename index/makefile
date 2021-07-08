@@ -38,3 +38,4 @@ clean-all:
 	rm -f $(OBJ) $(EXE) *~
 	rm -r libsdsl
 	rm -r sdsl-lite
+	rm -r boost_1_75_0
