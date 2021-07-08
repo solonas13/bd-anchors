@@ -683,7 +683,7 @@ int main(int argc, char **argv)
 		string first_window = pattern.substr(0, ell).c_str();
   		INT j = minlexrot( first_window, f, ell );
   		
-		if ( pattern.size() - j >= j ) //if the right part is bigger than the left part then search the right part to get a smaller interval on RSA
+		if ( pattern.size() - j >= j ) //if the right part is bigger than the left part, then search the right part to get a smaller interval on RSA (on average)
 		{
   			string right_pattern = pattern.substr(j, pattern.size()-j);
 			pair<INT,INT> right_interval = pattern_matching ( right_pattern, text_string, RSA, RLCP, rrmq, g );
@@ -694,20 +694,20 @@ int main(int argc, char **argv)
 			for(INT i = right_interval.first; i <= right_interval.second; i++ ) //this can be a large interval and only one occurrence is valid.
 			{
 				INT index = RSA[i];
-				INT jj = j;
-				index--; 	jj--;
+				INT jj = j;		//this is the index of the anchor in the pattern
+				index--; 	jj--;	//jump the index of the anchor and start looking on the left
 				while ( ( jj >= 0 ) && ( index >= 0 ) && ( text_string[index] == pattern[jj] ) )
 				{
 					index--; jj--;
 				}
-				if ( jj < 0 ) //this is because we have matched the pattern completely
+				if ( jj < 0 ) //we have matched the pattern completely
 				{
 					if ( index == 0 )	cout<< pattern <<" found at position "<< index << " of the text"<<endl;					
 					else			cout<< pattern <<" found at position "<< index + 1 << " of the text"<<endl;
 				}					
 			}
 		}
-		else //otherwise search the left part to get a smaller interval on LSA
+		else //otherwise, search the left part to get a smaller interval on LSA (on average)
 		{
 			string left_pattern = pattern.substr(0, j+1);
 			reverse(left_pattern.begin(), left_pattern.end());
@@ -719,13 +719,13 @@ int main(int argc, char **argv)
 			for(INT i = left_interval.first; i <= left_interval.second; i++ ) //this can be a large interval and only one occurrence is valid.
 			{
 				INT index = n-1-LSA[i];
-				INT jj = j;
-				index++; 	jj++;
+				INT jj = j;		//this is the index of the anchor in the pattern
+				index++; 	jj++;	//jump the index of the anchor and start looking on the right
 				while ( ( jj < pattern.size() ) && ( index < n ) && ( text_string[index] == pattern[jj] ) )
 				{
 					index++; jj++;
 				}
-				if ( jj == pattern.size() ) 
+				if ( jj == pattern.size() ) //we have matched the pattern completely
 				{
 					if ( index == n - 1 )	cout<< pattern <<" found at position "<< index - pattern.size() + 1 << " of the text"<<endl;					
 					else			cout<< pattern <<" found at position "<<  index - pattern.size() << " of the text"<<endl;
