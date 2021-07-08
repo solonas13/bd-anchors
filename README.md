@@ -7,7 +7,7 @@ Bd-anchors samples are approximately uniform, locally consistent, and computable
 
 Our experiments using several datasets demonstrate that the bd-anchors sample sizes decrease proportionally to <b>ell</b>; and that these sizes are competitive to or smaller than the minimizers sample sizes using the analogous sampling parameters.
 
-To compile the index based on bd-anchors, please change to directory <b>index</b> and follow the instructions given in file INSTALL.
+<b>Index</b>: the current implementations constructs an index of size <b>n</b> bytes + <b>O(|A|)</b> words, where <b>A</b> is the set of bd-anchors. To compile the program, please change to directory <b>index</b> and follow the instructions given in file INSTALL.
 
 When publishing work that is based on the results from bd-anchors please cite:
 ```
