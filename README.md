@@ -9,6 +9,8 @@ Our experiments using several datasets show that the bd-anchors sample sizes dec
 
 <b>Index</b>: the current implementation constructs an index of size <b>n</b> bytes + <b>O(|A|)</b> 64-bit words. It supports <b>locate</b> operations for any pattern of length at least <b>ℓ</b>. To compile the program, please change to directory <b>index</b> and follow the instructions given in file INSTALL.
 
+<b>Top-K Similarity Search under Edit Distance</b>: to be uploaded soon.
+
 When publishing work that is based on the results from bd-anchors please cite:
 ```
 G. Loukides and S. P. Pissis:
