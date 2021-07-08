@@ -1,0 +1,40 @@
+MF=     makefile
+ 
+CC=     g++
+ 
+CFLAGS= -g -D_USE_64 -msse3 -O3 -fomit-frame-pointer -funroll-loops 
+ 
+LFLAGS= -std=c++11 -O3 -DNDEBUG -I ./libsdsl/include/ -L ./libsdsl/lib/ -lsdsl -ldivsufsort -ldivsufsort64 -I ./boost_1_75_0 -Wl,-rpath=$(PWD)/libsdsl/lib
+
+EXE=    index
+ 
+SRC=    index.cpp 
+ 
+HD=     int.h makefile
+ 
+# 
+# No need to edit below this line 
+# 
+ 
+.SUFFIXES: 
+.SUFFIXES: .cc .o 
+ 
+OBJ=    $(SRC:.cc=.o) 
+ 
+.cc.o: 
+	$(CC) $(CFLAGS)-c $(LFLAGS) $< 
+ 
+all:    $(EXE) 
+ 
+$(EXE): $(OBJ) 
+	$(CC) $(CFLAGS) -o $@ $(OBJ) $(LFLAGS) 
+ 
+$(OBJ): $(MF) $(HD) 
+ 
+clean: 
+	rm -f $(OBJ) $(EXE) *~
+
+clean-all: 
+	rm -f $(OBJ) $(EXE) *~
+	rm -r libsdsl
+	rm -r sdsl-lite
