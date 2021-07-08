@@ -7,7 +7,7 @@ Bd-anchors samples are approximately uniform, locally consistent, and computable
 
 Our experiments using several datasets show that the bd-anchors sample sizes decrease proportionally to <b>ℓ</b>; and that these sizes are competitive to or smaller than the minimizers sample sizes using the analogous sampling parameters. For instance, for the Chromosome 1 of human genome, which is of length <b>n = 230,481,390</b>, and <b>ℓ = 500</b>, the set <b>A</b> of order-<b>ℓ</b> bd-anchors is of size <b>2,385,390</b>.
 
-<b>Indexing</b>: our index has size <b>n</b> bytes + <b>O(|A|)</b> words and supports <b>locate</b> operations for any pattern of length at least <b>ℓ</b> in near-optimal time --- the time of <b>locate</b> operation in the current implementation is not bounded. To compile the program, please change to directory <b>index</b> and follow the instructions given in file INSTALL.
+<b>Indexing</b>: our index has size <b>n</b> bytes + <b>O(|A|)</b> words and supports <b>locate</b> operations for any pattern of length at least <b>ℓ</b> in near-optimal time --- the time in the current implementation is not bounded. To compile the program, please change to directory <b>index</b> and follow the instructions given in file INSTALL.
 
 <b>Top-K Similarity Search under Edit Distance</b>: to be uploaded soon.
 
