@@ -691,7 +691,7 @@ int main(int argc, char **argv)
 
 			if(right_interval.first > right_interval.second)	continue;
 		
-			for(INT i = right_interval.first; i <= right_interval.second; i++ ) //this can be an interval of size 10^10 and only one occurrence is valid.
+			for(INT i = right_interval.first; i <= right_interval.second; i++ ) //this can be a large interval and only one occurrence is valid.
 			{
 				INT index = RSA[i];
 				INT jj = j;
@@ -707,6 +707,24 @@ int main(int argc, char **argv)
 				}					
 			}
 		}
+/* Kasai et al algorithm for O(n)-time LCP construction */
+INT LCParray ( unsigned char * text, INT n, INT * SA, INT * ISA, INT * LCP )
+{
+        INT i=0, j=0;
+
+        LCP[0] = 0;
+        for ( i = 0; i < n; i++ ) // compute LCP[ISA[i]]
+                if ( ISA[i] != 0 )
+                {
+                        if ( i == 0) j = 0;
+                        else j = (LCP[ISA[i-1]] >= 2) ? LCP[ISA[i-1]]-1 : 0;
+                        while ( text[i+j] == text[SA[ISA[i]-1]+j] )
+                                j++;
+                        LCP[ISA[i]] = j;
+                }
+        return ( 1 );
+}
+
 		else //otherwise search the left part to get a smaller interval on LSA
 		{
 			string left_pattern = pattern.substr(0, j+1);
@@ -716,7 +734,7 @@ int main(int argc, char **argv)
 
 			if(left_interval.first > left_interval.second)	continue;
 		
-			for(INT i = left_interval.first; i <= left_interval.second; i++ ) //this can be an interval of size 10^10 and only one occurrence is valid.
+			for(INT i = left_interval.first; i <= left_interval.second; i++ ) //this can be a large interval and only one occurrence is valid.
 			{
 				INT index = n-1-LSA[i];
 				INT jj = j;
