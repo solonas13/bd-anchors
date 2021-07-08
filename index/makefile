@@ -10,7 +10,7 @@ EXE=    index
  
 SRC=    index.cpp 
  
-HD=     int.h makefile
+HD=     utils.h makefile
  
 # 
 # No need to edit below this line 
