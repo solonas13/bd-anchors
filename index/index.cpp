@@ -502,7 +502,7 @@ int main(int argc, char **argv)
 
 	if( ell < 1 || ell > text_string.size())
       	{
-        	cout<<"w must be in [1, "<<text_string.size()<<"]"<<endl;
+        	cout<<"ell must be in [1, "<<text_string.size()<<"]"<<endl;
          	return -1;
       	}
 
