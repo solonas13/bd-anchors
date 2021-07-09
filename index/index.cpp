@@ -107,7 +107,7 @@ INT LCParray ( unsigned char * text, INT n, INT * SA, INT * ISA, INT * LCP )
 
 
 /* Constructs the right compacted trie given the anchors and the SA of the whole string in O(n) time */
-void right_compacted_trie ( unordered_set<INT> &anchors, INT * SA, INT * LCP, INT n, INT * RSA, INT * RLCP, unordered_map<INT,INT> &invRSA, INT g )
+void right_compacted_trie ( unordered_set<INT> &anchors, INT * SA, INT * LCP, INT n, INT * RSA, INT * RLCP, INT g )
 {
 	INT ii = 0; //this is the index over RSA[o..g-1] and the RLCP[0..g-1], where g is the number of anchors
 	INT minLCP = n; //this is to maintain the minimum LCP in a range over LCP[i..j]: stores the LCP of SA[i] and SA[j]
@@ -119,7 +119,6 @@ void right_compacted_trie ( unordered_set<INT> &anchors, INT * SA, INT * LCP, IN
 		if( it != anchors.end() )
 		{
 			RSA[ii] = SA[i];		// store this suffix
-			invRSA[RSA[ ii ]] = ii;		// store the rank ii of this suffix
 			if ( ii == 0 )	RLCP[ii] = 0; 	// if it is the first time the RLCP = LCP = 0
 			else
 			{
@@ -141,7 +140,7 @@ void right_compacted_trie ( unordered_set<INT> &anchors, INT * SA, INT * LCP, IN
 }
 
 /* Constructs the left compacted trie given the anchors and the SA of the whole string in O(n) time */
-void left_compacted_trie ( unordered_set<INT> &anchors, INT * SA, INT * LCP, INT n, INT * RSA, INT * RLCP, unordered_map<INT,INT> &invRSA, INT g )
+void left_compacted_trie ( unordered_set<INT> &anchors, INT * SA, INT * LCP, INT n, INT * RSA, INT * RLCP, INT g )
 {
 	INT ii = 0;
 	INT minLCP = n;
@@ -152,7 +151,6 @@ void left_compacted_trie ( unordered_set<INT> &anchors, INT * SA, INT * LCP, INT
 		if( it != anchors.end() )
 		{
 			RSA[ii] = SA[i];		// store this suffix
-			invRSA[(n-1) - RSA[ii]] = ii;	// store the rank ii of this suffix
 			if ( ii == 0 )	RLCP[ii] = 0; 	// if it is the first time the RLCP = LCP = 0
 			else
 			{
@@ -564,7 +562,6 @@ int main(int argc, char **argv)
 	/* Constructing right and left compacted tries */
   	INT * RSA;
   	INT * RLCP;
-  	unordered_map<INT,INT> invRSA;
 
   	RSA = ( INT * ) malloc( ( g ) * sizeof( INT ) );
   	if( ( RSA == NULL) )
@@ -580,7 +577,7 @@ int main(int argc, char **argv)
         	return ( 0 );
   	}
 
-  	right_compacted_trie ( text_anchors, SA, LCP, n, RSA, RLCP, invRSA, g );
+  	right_compacted_trie ( text_anchors, SA, LCP, n, RSA, RLCP, g );
   	cout<<"Right Compacted trie constructed "<<endl;
 
   	/* We reverse the string for the left direction and also overwrite all other DSs */
@@ -602,10 +599,10 @@ int main(int argc, char **argv)
 		fprintf(stderr, " Error: LCP computation failed.\n" );
           	exit( EXIT_FAILURE );
   	}
+  	free ( invSA );
 
   	INT * LSA;
   	INT * LLCP;
-  	unordered_map<INT,INT> invLSA;
 
   	LSA = ( INT * ) malloc( ( g ) * sizeof( INT ) );
   	if( ( LSA == NULL) )
@@ -620,14 +617,13 @@ int main(int argc, char **argv)
         	return ( 0 );
   	}
 
-  	left_compacted_trie ( text_anchors, SA, LCP, n, LSA, LLCP, invLSA, g );
+  	left_compacted_trie ( text_anchors, SA, LCP, n, LSA, LLCP, g );
   	cout<<"Left Compacted trie constructed"<<endl;
 
   	/* After constructing the tries these DSs over the whole string are not needed anymore, our data structure must be of size O(g) */
   	text_anchors.clear();
   	free ( SA );
   	free ( LCP );
-  	free ( invSA );
   	cout<<"SA and LCP of the whole string cleared"<<endl;
 
   	/* The following RMQ data structures are used for spelling pattern over the LSA and RSA */
@@ -638,9 +634,6 @@ int main(int argc, char **argv)
   	fast_RMQ ( LLCP, -1, g, g, lrmq ); //construction
   	cout<<"Right RMQ DS constructed "<<endl;
   	fast_RMQ ( RLCP, -1, g, g, rrmq ); //construction
-
-	invRSA.clear();
-  	invLSA.clear();
 
     	cout<<"The whole index is constructed"<<endl;
 	
