@@ -48,21 +48,20 @@ INT minlexrot( string &X, INT *f, INT n)
 	INT n_d = n<<1;
   	for(INT i = 0; i < n_d; ++i)	f[i] = (INT) -1;
 
-  	unsigned char * seq = (unsigned char *) X.c_str();
   	INT k = 0;
   	for (INT j = 1; j < n_d; ++j)
   	{
-                unsigned char sj = seq[j%n];
+                unsigned char sj = X[j%n];
                 INT i = f[j - k - 1];
-                while (i != (INT)-1 && sj != seq[(k + i + 1)%n])
+                while (i != (INT)-1 && sj != X[(k + i + 1)%n])
                 {
-                        if (sj < seq[(k + i + 1)%n])        k = j - i - 1;
+                        if (sj < X[(k + i + 1)%n])        k = j - i - 1;
                         i = f[i];
                 }
 				
-                if (i == (INT) - 1 && sj != seq[(k + i + 1)%n])
+                if (i == (INT) - 1 && sj != X[(k + i + 1)%n])
                 {
-                        if (sj < seq[(k+i+1)%n])    k = j;
+                        if (sj < X[(k+i+1)%n])    k = j;
                         f[j - k] = -1;
                 }
                 else
