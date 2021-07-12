@@ -38,6 +38,9 @@ using namespace std;
 #ifdef _USE_64
 #include <divsufsort64.h>                                         // include header for suffix sort
 #endif
+#ifdef _USE_32
+#include <divsufsort.h>                                       	  // include header for suffix sort
+#endif
 #include <sdsl/bit_vectors.hpp>                                   // include header for bit vectors
 using namespace sdsl;
 
@@ -73,14 +76,14 @@ INT minlexrot( string &X, INT *f, INT n)
 /* Computes the bd-anchors of a string of length n in O(n.ell) time */
 void fast_anchors(string &whole_string, unordered_set<INT> &my_map, INT ell)
 {
-	INT whole_string_len=whole_string.size();
+	INT whole_string_len = whole_string.size();
    	INT start_pos = 0;
 
         INT *f = new INT[ell<<1];
 	while( (start_pos + ell) <= whole_string_len )
   	{
-		string string_in_win = whole_string.substr(start_pos,ell);
-		INT anchor_pos = start_pos + minlexrot(string_in_win,f,ell);
+		string string_in_win = whole_string.substr(start_pos, ell);
+		INT anchor_pos = start_pos + minlexrot(string_in_win, f, ell);
 	 	my_map.insert(anchor_pos);
      		start_pos = start_pos + 1;
   	}
@@ -180,14 +183,14 @@ INT fast_RMQ ( INT * arr, INT L, INT R, INT n, std::unordered_map<pair<INT,INT>,
 		INT M = (L+R)/2;
 		INT a = fast_RMQ ( arr, L, M, n, rmq ); //Recurse on the left
 		INT b = fast_RMQ ( arr, M, R, n, rmq ); //Recurse on the right
-		INT value = std::min(a, b); 	     //This is the minimum of arr[L+1..M]
+		INT value = std::min(a, b); 	     	//This is the minimum of arr[L+1..M]
 
 		pair<INT,INT> p(L+1, R);
 		pair<pair<INT,INT>,INT> np(p, value);
 		rmq.insert(np);
 		return value;
 	}
-	else  // Base case: leaf nodes
+	else  		// Base case: leaf nodes
 	{
 		INT value;
 		if ( R >= n ) value = 0;
@@ -525,11 +528,22 @@ int main(int argc, char **argv)
   		fprintf(stderr, " Error: Cannot allocate memory for SA.\n" );
         	return ( 0 );
   	}
+
+	#ifdef _USE_64
   	if( divsufsort64( seq, SA,  n ) != 0 )
   	{
   		fprintf(stderr, " Error: SA computation failed.\n" );
           	exit( EXIT_FAILURE );
   	}
+	#endif
+
+	#ifdef _USE_32
+  	if( divsufsort( seq, SA,  n ) != 0 )
+  	{
+  		fprintf(stderr, " Error: SA computation failed.\n" );
+          	exit( EXIT_FAILURE );
+  	}
+	#endif
 
   	/*Compute the inverse SA array */
   	invSA = ( INT * ) calloc( n , sizeof( INT ) );
@@ -583,11 +597,20 @@ int main(int argc, char **argv)
   	/* We reverse the string for the left direction and also overwrite all other DSs */
   	reverse(text_string.begin(), text_string.end());
 
+	#ifdef _USE_64
   	if( divsufsort64( seq, SA,  n ) != 0 )
   	{
   		fprintf(stderr, " Error: SA computation failed.\n" );
           	exit( EXIT_FAILURE );
   	}
+	#endif
+	#ifdef _USE_32
+  	if( divsufsort( seq, SA,  n ) != 0 )
+  	{
+  		fprintf(stderr, " Error: SA computation failed.\n" );
+          	exit( EXIT_FAILURE );
+  	}
+	#endif
 
   	for ( INT i = 0; i < n; i ++ )
   	{

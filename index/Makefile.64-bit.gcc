@@ -1,4 +1,4 @@
-MF=     makefile
+MF=     Makefile.64-bit.gcc
  
 CC=     g++
  
@@ -10,7 +10,7 @@ EXE=    index
  
 SRC=    index.cpp 
  
-HD=     utils.h makefile
+HD=     utils.h Makefile.64-bit.gcc
  
 # 
 # No need to edit below this line 
