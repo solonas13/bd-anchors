@@ -2,7 +2,7 @@ MF=     Makefile.32-bit.gcc
  
 CC=     g++
  
-CFLAGS= -g -D_USE_32 -msse3 -O3 -fomit-frame-pointer -funroll-loops 
+CFLAGS= -D_USE_32 -msse3 -O3 -fomit-frame-pointer -funroll-loops 
  
 LFLAGS= -std=c++11 -O3 -DNDEBUG -I ./libsdsl/include/ -L ./libsdsl/lib/ -lsdsl -ldivsufsort -ldivsufsort64 -I ./boost_1_75_0 -Wl,-rpath=$(PWD)/libsdsl/lib
 
