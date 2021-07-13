@@ -8,7 +8,7 @@ LFLAGS= -std=c++11 -O3 -DNDEBUG -I ./libsdsl/include/ -L ./libsdsl/lib/ -lsdsl -
 
 EXE=    index
  
-SRC=    index.cpp 
+SRC=    index.cc
  
 HD=     utils.h Makefile.64-bit.gcc
  
