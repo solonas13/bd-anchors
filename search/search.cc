@@ -1,28 +1,7 @@
 #define DEBUG false
-#include <algorithm>
-#include <chrono>
-#include <stdio.h>
-#include <math.h>
-#include <stdlib.h>
-#include <string.h>
-#include <getopt.h>
-#include <assert.h>
-#include <sys/time.h>
-#include <iostream>
-#include <cstdint>
-#include <vector>
 #include <unordered_set>
-#include <unordered_map>
-#include <fstream>
-#include <sstream>
-#include <deque>
 #include <boost/functional/hash.hpp>
-#include <list>
-#include <ctime>
-#include <random>
-#include <algorithm>
-
-#include "int.h"
+#include "int.hpp"
 
 #ifdef _USE_64
 #include <divsufsort64.h>                                         // include header for suffix sort

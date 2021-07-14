@@ -10,7 +10,7 @@ EXE=    search
  
 SRC=    search.cc
  
-HD=     int.h Makefile.32-bit.gcc
+HD=     Makefile.32-bit.gcc
  
 # 
 # No need to edit below this line 
