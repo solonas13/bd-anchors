@@ -16,18 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <getopt.h>
-#include <vector>
-#include <iostream>
 #include <unordered_set>
-#include <unordered_map>
-#include <fstream>
-#include <sstream>
-#include <chrono>
 #include "utils.h"
 
 #include <boost/functional/hash.hpp>
