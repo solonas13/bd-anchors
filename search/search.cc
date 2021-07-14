@@ -514,7 +514,7 @@ void pattern_matching ( string & w, string & a, INT * SA, INT * LCP, std::unorde
 	return;
 }
 
-/* Computing LIS in O(n log n) time -- functiont taken from http://comscigate.com/Books/contests/icpc.pdf */
+/* Computing LIS in O(n log n) time -- function taken from http://comscigate.com/Books/contests/icpc.pdf */
 struct IndexValueCompare
 {
 	inline bool operator() (const pair<INT, INT> &one, const pair<INT, INT> &another)
