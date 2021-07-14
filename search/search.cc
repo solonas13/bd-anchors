@@ -1,4 +1,3 @@
-#define DEBUG false
 #include <unordered_set>
 #include <boost/functional/hash.hpp>
 #include "int.hpp"
