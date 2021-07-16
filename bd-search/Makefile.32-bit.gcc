@@ -35,8 +35,8 @@ clean:
 	rm -f $(OBJ) $(EXE) *~
 
 clean-all:
-        rm -f $(OBJ) $(EXE) *~
-        rm -r libsdsl
-        rm -r sdsl-lite
-        rm -r boost_1_75_0
-        rm boost_1_75_0.tar.gz
+	rm -f $(OBJ) $(EXE) *~
+	rm -r libsdsl
+	rm -r sdsl-lite
+	rm -r boost_1_75_0
+	rm boost_1_75_0.tar.gz
