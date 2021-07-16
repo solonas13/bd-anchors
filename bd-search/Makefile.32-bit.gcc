@@ -1,8 +1,8 @@
-MF=     Makefile.64-bit.gcc
+MF=     Makefile.32-bit.gcc
  
 CC=     g++
  
-CFLAGS= -D_USE_64 -msse3 -O3 -fomit-frame-pointer -funroll-loops 
+CFLAGS= -D_USE_32 -msse3 -O3 -fomit-frame-pointer -funroll-loops 
  
 LFLAGS= -std=c++11 -O3 -DNDEBUG -I ./libsdsl/include/ -L ./libsdsl/lib/ -lsdsl -ldivsufsort -ldivsufsort64 -I ./boost_1_75_0 -Wl,-rpath=$(PWD)/libsdsl/lib
 
@@ -10,7 +10,7 @@ EXE=    search
  
 SRC=    search.cc
  
-HD=     utils.h Makefile.64-bit.gcc
+HD=     utils.h Makefile.32-bit.gcc
  
 # 
 # No need to edit below this line 
@@ -34,5 +34,9 @@ $(OBJ): $(MF) $(HD)
 clean: 
 	rm -f $(OBJ) $(EXE) *~
 
-clean-all: 
-	rm -f $(OBJ) $(EXE) *~
+clean-all:
+        rm -f $(OBJ) $(EXE) *~
+        rm -r libsdsl
+        rm -r sdsl-lite
+        rm -r boost_1_75_0
+        rm boost_1_75_0.tar.gz
