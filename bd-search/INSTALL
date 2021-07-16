@@ -12,7 +12,6 @@ $ ./pre-install.sh
 Basic Instructions
 ==================
 
-
 The shell command `make -f Makefile.64-bit.gcc' should compile this 
 program. You can use `make -f Makefile.32-bit.gcc' instead. The latter 
 is suitable for shorter texts and requires less memory.
