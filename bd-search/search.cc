@@ -696,8 +696,8 @@ int main(int argc, char** argv)
  	INT delta;
  	stringstream(argv[6])>>delta; 
  
- 	cout<<"Parameters: ell = "<<ell<<", K = "<<K<<", tau = "<<0<<" delta="<<0<<endl;
- 	cout<<"(In future versions there will be support for tau>0 and delta>0)\n";
+ 	cout<<"Parameters: ell = "<<ell<<", K = "<<K<<", tau = "<<0<<" delta = "<<0<<endl;
+ 	cout<<"(In future versions there will be support for tau > 0 and delta > 0)\n";
  
   	vector<pair<INT, vector<unsigned char> > > all_strings;
   	vector<unsigned char> input_seq_vec;
