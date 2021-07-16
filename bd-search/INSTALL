@@ -24,12 +24,13 @@ $ ./search <dictionary> <ell> <pattern> <K> <tau> <delta>
 Currently, the program supports only tau=0 and delta=0.
 
 For example, the output of
+
 $ ./search ./data/dictionary.txt 3 ./data/pattern.txt 2 0 0
 
 is: 
 
- Parameters: ell = 3, K=2, tau=0 delta=0
- (In future versions there will be support for tau>0 and delta>0)
+ Parameters: ell = 3, K = 2, tau = 0 delta = 0
+ (In future versions there will be support for tau > 0 and delta > 0)
  Edit distance: 2
  String       : WAAVCCDE
  Edit distance: 0
@@ -37,8 +38,9 @@ is:
  Elapsed total time (ms) : 0
  Avg time per query (ms) : 0
 
-This means that for K=2 we obtain as answer 
-the strings WAAVCCDE and AAVLCDE from dictionary.txt whose edit distance 
-from the pattern in pattern.txt is 2 and 0 respectively. 
-Please see the code for disabling the edit distance computation should you need 
-to speed up the program for large inputs. 
+This means that for K=2 we obtain as answer the two strings WAAVCCDE 
+and AAVLCDE from dictionary.txt whose edit distance from the pattern 
+in pattern.txt is 2 and 0 respectively. 
+
+Please see the code for disabling the edit distance computation should 
+you need to speed up the program for large inputs. 
