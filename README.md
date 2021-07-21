@@ -5,7 +5,7 @@ Bidirectional string anchors (bd-anchors, for short) is a new string sampling me
 
 Bd-anchors samples are approximately uniform, locally consistent, and computable in <b>O(n)</b> time, for any input text of length <b>n</b> and any <b>ℓ</b> --- our current implementation supports an <b>O(nℓ)</b>-time construction. 
 
-Our experiments using several datasets show that the bd-anchors sample sizes decrease proportionally to <b>ℓ</b>; and that these sizes are competitive to or smaller than the minimizers sample sizes using the analogous sampling parameters. For instance, for the Chromosome 1 of human genome, which is of length <b>n = 230,481,390</b>, and <b>ℓ = 500</b> (resp. <b>1000</b>), the set <b>A</b> of order-<b>ℓ</b> bd-anchors is of size <b>2,385,390</b> (resp. <b>1,362,218</b>). We inject bd-anchors in two well-known problems:
+Our experiments using several datasets show that the bd-anchors sample sizes decrease proportionally to <b>ℓ</b>; and that these sizes are competitive to or smaller than the minimizers sample sizes using the analogous sampling parameters. For instance, for the Chromosome 1 of human genome, which is of length <b>n = 230,481,390</b>, and <b>ℓ = 500</b> (resp. <b>1000</b>), the set <b>A</b> of order-<b>ℓ</b> bd-anchors is of size <b>2,385,390</b> (resp. <b>1,362,218</b>). We inject bd-anchors in two problems:
 
 <b>Indexing for On-Line Pattern Searches</b>: Our index has size <b>n</b> bytes + <b>O(|A|)</b> words and supports <b>locate</b> operations for any pattern of length at least <b>ℓ</b> in near-optimal time --- the time supported in the current implementation is not bounded. To compile the program, please change to directory <b>bd-index</b> and follow the instructions given in file INSTALL.
 
