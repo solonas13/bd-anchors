@@ -14,8 +14,8 @@ Our experiments using several datasets show that the bd-anchors sample sizes dec
 When publishing work that is based on the results from bd-anchors please cite:
 ```
 G. Loukides and S. P. Pissis:
-Bidirectional String Anchors: a New String Sampling Mechanism. (in press) 
-ESA 2021
+Bidirectional String Anchors: a New String Sampling Mechanism. 
+ESA 2021: 64:1-64:21
 ```
 
 <b>License</b>: GNU GPLv3 License; Copyright (C) 2021 Grigorios Loukides and Solon P. Pissis.
