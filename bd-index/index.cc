@@ -454,11 +454,12 @@ pair<INT,INT> rev_pattern_matching ( string & w, string & a, INT * SA, INT * LCP
 	return interval;
 }
 
+/* Computes the size of the input alphabet in linear time */
 INT alphabet_size(string s)
 {
-    unordered_map<char, int> m;
-    for (INT i = 0; i < s.length(); i++)	m[s[i]]++;
-    return m.size();
+    unordered_map<unsigned char, INT> h;
+    for (INT i = 0; i < s.length(); i++)	h[s[i]]++;
+    return h.size();
 }
 
 int main(int argc, char **argv)
