@@ -454,6 +454,13 @@ pair<INT,INT> rev_pattern_matching ( string & w, string & a, INT * SA, INT * LCP
 	return interval;
 }
 
+INT alphabet_size(string s)
+{
+    unordered_map<char, int> m;
+    for (INT i = 0; i < s.length(); i++)	m[s[i]]++;
+    return m.size();
+}
+
 int main(int argc, char **argv)
 {
 	if( argc != 4 )
@@ -500,7 +507,7 @@ int main(int argc, char **argv)
 
       	fast_anchors(text_string, text_anchors, ell);
 	INT g = text_anchors.size();
-	cout<<"The text is of length "<< text_string.size() << " and has "<<g<<" bd-anchors of order "<<ell<<endl;
+	cout<<"The text is of length "<< text_string.size() << ", its alphabet size is "<< alphabet_size(text_string) << ", and it has "<<g<<" bd-anchors of order "<<ell<<endl;
 	cout<<"The density is "<<(double) g / text_string.size()<<endl;
 
   	INT * SA;
