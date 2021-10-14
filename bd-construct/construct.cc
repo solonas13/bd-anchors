@@ -71,7 +71,7 @@ void fast_anchors(string &whole_string, unordered_set<INT> &my_map, INT ell)
 	delete []f;
 }
 
-/* Booth's O(n)-time algorithm -- slightly adapted for efficiency */
+/* Booth's O(n)-time algorithm -- slightly adapted for efficiency -- neglecting the last r rotations */
 INT red_minlexrot( string &X, INT *f, INT n, INT r )
 {  
 	INT n_d = n<<1;
@@ -99,7 +99,7 @@ INT red_minlexrot( string &X, INT *f, INT n, INT r )
    	return k;
 }
 
-/* Computes the bd-anchors of a string of length n in O(n.ell) time */
+/* Computes the reduced bd-anchors of a string of length n in O(n.ell) time */
 void red_fast_anchors(string &whole_string, unordered_set<INT> &my_map, INT ell, INT r)
 {
 	INT whole_string_len = whole_string.size();
