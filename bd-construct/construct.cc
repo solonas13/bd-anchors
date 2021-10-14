@@ -51,7 +51,6 @@ INT minlexrot( string &X, INT *f, INT n )
                 else
                         f[j - k] = i + 1;
    	}
-  	//std::cout <<"The rotation is "<<k<<std::endl;
    	return k;
 }
 
@@ -97,7 +96,6 @@ INT red_minlexrot( string &X, INT *f, INT n, INT r )
                 else
                         f[j - k] = i + 1;
    	}
-  	//std::cout <<"The rotation is "<<k<<std::endl;
    	return k;
 }
 
@@ -161,21 +159,12 @@ int main(int argc, char **argv)
 	string text_string(text.begin(), text.end());
 	INT sigma = alphabet_size(text_string);
  	cout<<"The input alphabet is of size "<<sigma<<endl;
- 	INT r = ceil(3*log2(ell)/log2(sigma));
 
 	if( ell < 1 || ell > text_string.size())
       	{
         	cout<<"ell must be in [1, "<<text_string.size()<<"]"<<endl;
          	return -1;
       	}
-	
-	if( r < 0 || r > ell - 1)
-      	{
-        	cout<<"The parameter r must be in [0,ell-1]"<<endl;
-         	r = 0;
-      	}
-	
- 	cout<<"The parameter r is set to "<<r<<endl;
 
  	unordered_set<INT> text_anchors;
       	fast_anchors(text_string, text_anchors, ell);
@@ -183,13 +172,18 @@ int main(int argc, char **argv)
 	cout<<"The text is of length "<< text_string.size() << " and has "<<g1<<" bd-anchors of order "<<ell<<endl;
 	cout<<"The density is "<<(double) g1 / text_string.size()<<endl;
  	
+ 	INT r = ceil(3*log2(ell)/log2(sigma));
+	if( r < 0 || r > ell - 1)
+      	{
+        	cout<<"The parameter r must be in [0,ell-1]"<<endl;
+         	r = 0;
+      	}
+ 	cout<<"The parameter r is set to "<<r<<endl;
 	unordered_set<INT> text_red_anchors;
 	red_fast_anchors(text_string, text_red_anchors, ell, r);
 	INT g2 = text_red_anchors.size();
 	cout<<"The text is of length "<< text_string.size() << " and has "<<g2<<" reduced bd-anchors of order "<<ell<<endl;
 	cout<<"The reduced density is "<<(double) g2 / text_string.size()<<endl;
-
-  	//std::cout <<"Memory is cleared"<<std::endl;
 
 	return 0;
 }
