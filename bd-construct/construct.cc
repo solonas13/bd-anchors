@@ -173,7 +173,7 @@ int main(int argc, char **argv)
 	cout<<"The density is "<<(double) g1 / text_string.size()<<endl;
  	
  	INT r = ceil(3*log2(ell)/log2(sigma));
-	if( r < 0 || r > ell - 1)
+	if( r > ell - 1 )
       	{
         	cout<<"The parameter r must be in [0,ell-1]"<<endl;
          	r = 0;
