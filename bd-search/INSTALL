@@ -29,12 +29,11 @@ $ ./search ./data/dictionary.txt 3 ./data/pattern.txt 2 0 0
 
 is: 
 
- Parameters: ell = 3, K = 2, tau = 0 delta = 0
- (In future versions there will be support for tau > 0 and delta > 0)
- Edit distance: 2
- String       : WAAVCCDE
- Edit distance: 0
- String       : AAVLCDE
+ Parameters: ell = 3, K = 2, tau = 0, delta = 0
+ Ub: 0 Edit distance: 0
+ Id: 0     String: AAVLCDE
+ Ub: 2 Edit distance: 2
+ Id: 2     String: WAAVCCDE
  Elapsed total time (ms) : 0
  Avg time per query (ms) : 0
 
