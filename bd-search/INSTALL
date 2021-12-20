@@ -21,8 +21,6 @@ directory, e.g. you may call it from this directory via
 
 $ ./search <dictionary> <ell> <pattern> <K> <tau> <delta>
 
-Currently, the program supports only tau=0 and delta=0.
-
 For example, the output of
 
 $ ./search ./data/dictionary.txt 5 ./data/pattern.txt 3 3 3
