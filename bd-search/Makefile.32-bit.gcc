@@ -8,9 +8,9 @@ LFLAGS= -std=c++11 -O3 -DNDEBUG -I ./libsdsl/include/ -L ./libsdsl/lib/ -lsdsl -
 
 EXE=    search
  
-SRC=    search.cc
+SRC=    search.cc edlib.cc
  
-HD=     utils.h Makefile.32-bit.gcc
+HD=     utils.h edlib.h Makefile.32-bit.gcc
  
 # 
 # No need to edit below this line 

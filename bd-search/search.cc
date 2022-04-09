@@ -16,9 +16,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
+#define DEBUG false
+
 #include <unordered_set>
 #include <boost/functional/hash.hpp>
 #include "utils.h"
+#include "edlib.h"
 
 #ifdef _USE_64
 #include <divsufsort64.h>                                         // include header for suffix sort
@@ -34,40 +37,17 @@ using namespace sdsl;
 using namespace std;
 using namespace boost;
 
-/* Edit distance computation in quadratic time and linear space -- function taken from https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#C++ */
-template<typename T>
-typename T::size_type LevenshteinDistance(const T &source, const T &target) 
+class mycomparison
 {
-	if (source.size() > target.size())	return LevenshteinDistance(target, source);
+ 
+  public:
+ 
+  bool operator() (const pair<INT,INT>& lhs, const pair<INT,INT>&rhs) const
+  {
+     return (lhs.first<rhs.first);
+  }
+};
 
-    	using TSizeType = typename T::size_type;
-    	const TSizeType min_size = source.size(), max_size = target.size();
-    	std::vector<TSizeType> lev_dist(min_size + 1);
-
-    	for (TSizeType i = 0; i <= min_size; ++i)	lev_dist[i] = i;
-
-    	for (TSizeType j = 1; j <= max_size; ++j) 
-    	{
-        	TSizeType previous_diagonal = lev_dist[0], previous_diagonal_save;
-        	++lev_dist[0];
-
-        	for (TSizeType i = 1; i <= min_size; ++i)
-		{
-			previous_diagonal_save = lev_dist[i];
-            		if (source[i - 1] == target[j - 1]) 
-			{
-                		lev_dist[i] = previous_diagonal;
-            		} 
-			else 
-			{
-                		lev_dist[i] = std::min(std::min(lev_dist[i - 1], lev_dist[i]), previous_diagonal) + 1;
-            		}
-            		previous_diagonal = previous_diagonal_save;
-        	}
-    	}
-	return lev_dist[min_size];
-}
-          
 /* Kasai et al algorithm for O(n)-time LCP construction */
 INT LCParray ( unsigned char * text, INT n, INT * SA, INT * ISA, INT * LCP )
 {
@@ -666,8 +646,6 @@ std::unordered_map<pair<INT,INT>, INT, boost::hash<pair<INT,INT> >> &rrmq, INT g
   	delete []f;
 }
 
-
-
 int main(int argc, char** argv)
 {
 	if(argc!=7)
@@ -696,8 +674,8 @@ int main(int argc, char** argv)
  	INT delta;
  	stringstream(argv[6])>>delta; 
  
- 	cout<<"Parameters: ell = "<<ell<<", K = "<<K<<", tau = "<<0<<" delta = "<<0<<endl;
- 	cout<<"(In future versions there will be support for tau > 0 and delta > 0)\n";
+ 	cout<<"Parameters: ell = "<<ell<<", K = "<<K<<", tau = "<<tau<<", delta = "<<delta<<endl;
+ 	
  
   	vector<pair<INT, vector<unsigned char> > > all_strings;
   	vector<unsigned char> input_seq_vec;
@@ -706,7 +684,7 @@ int main(int argc, char** argv)
 	while (is.read(reinterpret_cast<char*>(&c), 1))     
 	{
 		if(c=='\n')
-	      	{
+	    {
 			if(input_seq_vec.empty())
 				break; 
 			vector<unsigned char> v(input_seq_vec);
@@ -714,11 +692,11 @@ int main(int argc, char** argv)
 			all_strings.push_back(p);
 			input_seq_vec.clear();
 			id++;
-	      	}
-	      	else
-	      	{
+	    }
+	    else
+	    {
 			input_seq_vec.push_back((unsigned char)c);
-	      	}
+	    }
 	}
 	is.close();      
   
@@ -728,6 +706,9 @@ int main(int argc, char** argv)
   	// to each anchor 
  	unordered_map<INT, INT> global_anchors;
   	INT total_length_of_previous_strings=0;
+
+	//stores the total length of all previous strings with ids 0,1,...,m-1 in position m
+	vector<INT> vec_total_length_of_previous_strings;
   	
 	//for each string in the database
   	for(INT j=0; j<id ;++j)
@@ -746,6 +727,8 @@ int main(int argc, char** argv)
 	  	//how many anchors each string has
 	  	num_anchors_per_string[j]=anchors.size();
 	  
+		vec_total_length_of_previous_strings.push_back(total_length_of_previous_strings);
+
 	  	total_length_of_previous_strings +=current_string.size();		
   	}
   
@@ -948,25 +931,20 @@ int main(int argc, char** argv)
   	}
   	is2.close();      
   
+    
  	auto total_duration=0,total_duration2=0;
  
  	INT pruned_with_tau=0;  
  
  	INT cluster_id=0; 
+
  	for(auto &it_pat : all_patterns)   
  	{
+		INT sum_of_edit_distance_of_answers=0; //for every query, we will sum up the edit distance between its answers and itself
 		 /*                       QUERYING                               */
    
    		string pattern(it_pat.begin(),it_pat.end());
-      
-   		//keeps the ids of the top-K results w.r.t. edit distance 	
-   		list<INT> ground_truth_ids;	
-   
-   		for(INT i=0;i<K;++i)
-   		{
-	   		ground_truth_ids.push_back(cluster_id*K+i);
-	
-   		}
+         		
    
    		cluster_id++;   
    
@@ -987,96 +965,392 @@ int main(int argc, char** argv)
  
     		total_duration2 += chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now()-start_time).count();	
 	
+		
+				
   		for(auto &it : pattern_answers2)
   		{
-	  		INT string_id;
+			
+			
+			//pattern window end obtained from pattern's hit 
+			INT pat_window_end=anchors_and_window_ends_in_pattern[it.first];
+			INT string_id;
 	  		string_id = ids[it.second]; 
+		
+			//stores last position of previous string (with coords of whole string)
+			INT tlps=vec_total_length_of_previous_strings[string_id];
+		
+	  		INT window_end_of_string_hit=RSA[it.second]+(pat_window_end-it.first); //hit of string + offset (which is the same as the offset in the pattern window) - length of all previous strings
+		
+			//if string window end > length of current string, then hit is bogus, ignore. 
+			if(window_end_of_string_hit-tlps<ell)
+			{		
+				continue;
+			}
+			
 			auto it3 = all_LIS2.find(string_id);
 	  
 	    		if(it3 != all_LIS2.end())
 	    		{
-				all_LIS2[string_id].push_back(make_pair(it.first, RSA[it.second]));
-		  	}		  
+					
+					all_LIS2[string_id].push_back(make_pair(it.first, RSA[it.second]));
+				}		  
 	    		else
 	    		{
-		  		vector<pair<INT,INT> > v;
-		  		v.push_back(make_pair(it.first,RSA[it.second]));
-		  		all_LIS2.insert(make_pair(string_id,v));		  		  
+					vector<pair<INT,INT> > v;
+					v.push_back(make_pair(it.first,RSA[it.second]));
+					all_LIS2.insert(make_pair(string_id,v));		  		  
 	    		}	  
   		}  
-                
+	    
+
+		//Store the output of LIS for each string - key is string_ID 
+		unordered_map<INT, vector<pair<INT,INT> > > string_id_LIS;
+		
 		/* Step 2: Construct the LISs per database string and estimate the identiy score */
    		for(auto &it : all_LIS2)
    		{				 	  
-			vector<pair<INT,INT> > ret = fast_lis(it.second); 		
-		
-			//If LIS length < tau continue
-			//Commented out as we now support only tau=0
-			//if(ret.size()<tau)       
-			//	continue;							
 
+			/*cout<<"HITS:\n";
+			for(auto &itx : it.second)
+				cout<<"<"<<itx.first<<","<<itx.second<<"> ";
+			cout<<endl;
+			*/
+			//Now we prune <tau
+			if(it.second.size()<tau)
+			{
+				continue;
+			}
+			
+			
+			vector<pair<INT,INT> > ret = fast_lis(it.second); 		
+			
+			
+			//remove bogus HITS
+			vector<pair<INT, INT> > pruned_LIS;
+			for(vector<pair<INT,INT> >::iterator itr=ret.begin();itr!=ret.end();++itr)
+			{
+				pruned_LIS.push_back(*itr);
+				
+				auto itr_next=itr;
+				itr_next++;
+				
+				//if next is not the end
+				while(itr_next!=ret.end())
+				{
+					
+					if((*itr).first==(*itr_next).first)
+					{
+						itr++;
+						itr_next++;
+					}	
+					else
+					{					
+						break;
+					}
+				}
+			}
+			string_id_LIS.insert(make_pair(it.first,pruned_LIS));
+			
+			
 			vector<INT> e_is;
-			for(auto &it2 : ret)	e_is.push_back(anchors_and_window_ends_in_pattern[it2.first]);
-		
+			
+			
+			for(auto &it2 : pruned_LIS)
+			{
+				e_is.push_back(anchors_and_window_ends_in_pattern[it2.first]);
+			
+			}
+			
+						
 			INT score=ell;
-		
+					
 	   		for(vector<INT>::iterator it2=e_is.begin();it2!=e_is.end();++it2)
 			{
+				
 				auto it_next=it2;
 				it_next++;
 				if(it_next!=e_is.end())
 				{
-					if(*it2 + ell <= *it_next)	score += ell;
-					else				score += *it_next - *it2;
-				}
+					if(*it2 + ell <= *it_next)	
+					{
+						score += ell;
+			
+					}
+					else
+					{
+						score += *it_next - *it2;
+			
+					}
+
+				}							
 			}
-	   
-	   		string cur_string(all_strings[it.first].second.begin(),all_strings[it.first].second.end());
-	  	
-			double score_prod=-1.0*score;
-		
-			if(pq_est.size()<K) //if I have seen <K elements
-			{
-				pq_est.push(make_pair(score_prod,it.first));
-		
-			}
-			else
-			{
-				//if the pq top (which is the minimum) is larger than the current minimum , remove it and add the current minimum 
-				if(pq_est.top().first>(score_prod))
-				{		
-					pq_est.pop();
-					pq_est.push(make_pair(score_prod,it.first));
-				}			
-			}		
+			string cur_string(all_strings[it.first].second.begin(),all_strings[it.first].second.end());
+			
+			
+			//double score_prod=-1.0*score;
+			double score_prod=score;
+			//Add everything into priority queue
+			pq_est.push(make_pair(score_prod,it.first));
+					
    		}
-
-		/* Step 3: Mind the gaps! Estimate an upper bound on the edit distance */
-		//TODO
-
-		total_duration += chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now()-start_time).count();	
 		
-		list<INT> est_ids;
-		vector<INT> edit_distances_of_answers;   
+		INT cnt=0;
+		double Kth_score=delta; //score of the K-th Initialize with delta so that the first K are added into good_scores
+		vector<INT> good_scores;//stores string-ids of the strings with scores >= Kth_score - delta
+		
+		vector<pair<INT,INT> > score_id;
+		
 		while(!pq_est.empty())
 		{
+			
 			pair<double,INT> p=pq_est.top();
+			
+			
+			cnt++;
+			if(cnt==K)
+			{
+				Kth_score=p.first;
+			}
+			
+			if(p.first>=Kth_score-delta)
+			{
+				good_scores.push_back(p.second);		
+			}
+			else
+				break;
+			
+			pq_est.pop();			
+		}	
+		
+		
+		/* Step 3: Mind the gaps! Estimate an upper bound on the edit distance */
+		
+		
+		EdlibAlignResult fed;
+		
+		priority_queue<pair<double, INT>,vector<pair<INT,INT> >, mycomparison > pq_ub;
+			
+		for(auto &it : good_scores)
+   		{				 	  
+
+		
+			vector<INT> e_is;
+
+			//stores the window_ends for string (based on the current string)
+			vector<INT> window_ends_string; 
+
+			//stores the total length of previous strings 
+			INT tlps=vec_total_length_of_previous_strings[it];
+
+			
+			for(auto &it2 : string_id_LIS[it])
+			{
+				e_is.push_back(anchors_and_window_ends_in_pattern[it2.first]);
+				window_ends_string.push_back(it2.second+anchors_and_window_ends_in_pattern[it2.first]-it2.first-tlps);				
+			}
+			
+			string cur_string(all_strings[it].second.begin(),all_strings[it].second.end());	  		
+						
+			INT ub=0;
+			
+						
+	   		for(vector<INT>::iterator it2=e_is.begin(),it_string_end=window_ends_string.begin();it2!=e_is.end() && it_string_end!=window_ends_string.end();++it2,++it_string_end)
+			{
+							
+				auto it_next=it2;
+				it_next++;
+				
+					
+				if(it2==e_is.begin())
+				{
+								
+					INT y1=*it2;				//pat window end 	
+					INT x1=y1-ell+1; //pat window start
+					
+					
+					INT win_string_end=(*it_string_end);  //string window end 
+					INT win_string_start=win_string_end-ell+1; //string window start
+				
+							
+			
+					if(y1==win_string_end && x1>0) //synced  and no overlap
+					{
+						
+						 
+						 
+								//cout<<pattern.substr(0,x1)<<" "<<cur_string.substr(0,win_string_start)<<" x1="<<x1<<" y1="<<y1<<" win_string_start="<<win_string_start<<endl;														
+								fed=edlibAlign(pattern.c_str(),x1,cur_string.c_str(),win_string_start, edlibDefaultAlignConfig());
+								ub+=fed.editDistance;								
+								//cout<<"1a."<<fed.editDistance;
+						 
+						
+					}
+					else
+					{						
+						if(x1==0)
+						{
+							//cout<<cur_string.substr(0,win_string_start)<<endl;
+														
+							ub+=win_string_start;
+						}
+						else if(win_string_start==0)
+						{
+							//cout<<pattern.substr(0,x1)<<endl;
+							ub+=x1;														
+						}
+						else
+						{
+							//cout<<pattern.substr(0,x1)<<" "<<cur_string.substr(0,win_string_start)<<" x1="<<x1<<" y1="<<y1<<" win_string_start="<<win_string_start<<endl;							
+							
+							fed=edlibAlign(pattern.c_str(),x1,cur_string.c_str(),win_string_start, edlibDefaultAlignConfig());
+							ub+=fed.editDistance;															
+							//cout<<"2c. "<<fed.editDistance<<endl;
+						}
+					}
+				}
+				
+				if(it_next!=e_is.end())  
+				{
+					INT y1=*it2;       //pat window end
+					INT x1=y1-ell+1; //pat window start
+                    INT y2=*it_next; //next pat window end 
+					INT x2=y2-ell+1; //next pat window start
+					
+                                        
+                    INT win_string_end=(*it_string_end);
+                    INT win_string_start=(*it_string_end)-ell+1;
+					
+					auto it_next_string=it_string_end;
+					it_next_string++; 
+					INT next_win_string_end=(*it_next_string);
+					INT next_win_string_start=(*it_next_string)-ell+1;					
+					
+					if(y2-y1==next_win_string_end-win_string_end) //sync
+					{	
+						
+						if((ell<y2-y1) && (ell<next_win_string_end-win_string_end))       //no overlap 
+						{
+							//cout<<"3a "<<pattern.substr(y1+1,(x2-1-(y1+1)+1))<<" "<<cur_string.substr(win_string_end+1,(next_win_string_start-1-(win_string_end+1)+1))<<endl;
+							//if no overlap then the windows of string won't have overlap as they are synced
+							
+							fed=edlibAlign(&(pattern.c_str())[y1+1],x2-(y1+1),&(cur_string.c_str())[win_string_end+1],next_win_string_start-(win_string_end+1), edlibDefaultAlignConfig());
+							ub+=fed.editDistance;															
+							//cout<<"3a. "<<fed.editDistance;
+						}
+						//else they have overlap do nothing
+						
+						
+							
+					}
+					else //no sync
+					{
+						
+						if((ell<y2-y1) && (ell<next_win_string_end-win_string_end) ) //none of them overlap
+						{
+							//cout<<"3b "<<pattern.substr(y1+1,(x2-1-(y1+1)+1))<<" "<<cur_string.substr(win_string_end+1,next_win_string_start-1-(win_string_end+1)+1)<<endl;
+														
+							fed=edlibAlign(&(pattern.c_str())[y1+1],x2-1-y1,&(cur_string.c_str())[win_string_end+1],next_win_string_start-1-(win_string_end), edlibDefaultAlignConfig());
+							ub+=fed.editDistance;
+							//cout<<"3b. "<<fed.editDistance;
+						}
+						else //one of the two has overlap or both have overlap
+						{
+							if(y2-x1 >= next_win_string_end-win_string_start)  
+							{
+								
+								//cout<<"3c. "<<(y2-x1+1)-(next_win_string_end-win_string_start+1)<<endl;
+								ub+=(y2-x1)-(next_win_string_end-win_string_start);
+							}
+							else
+							{
+								ub+=next_win_string_end-win_string_start-y2+x1;
+							}
+						}
+					}
+				}
+				else //not in the beginning and teleutaio it_next == e_is.end() 
+				{
+					
+                    INT y1=*it2;       //pat window end                                       
+					INT x1=y1-ell+1; //pat window start
+
+                    INT win_string_end=(*it_string_end);
+                    INT win_string_start=win_string_end-ell+1;
+                                                           
+					if(y1!=pattern.length()-1 && win_string_end!=cur_string.length()-1) //pattern window end is not the last character and string window end is not the last character
+					{
+						//cout<<"4a. "<<pattern.substr(y1+1,pattern.length()-1-(y1+1)+1)<<" "<<cur_string.substr(win_string_end+1,cur_string.length()-1-(win_string_end+1)+1)<<endl;
+						
+						fed=edlibAlign(&(pattern.c_str())[y1+1],pattern.length()-(y1+1),&(cur_string.c_str())[win_string_end+1],cur_string.length()-(win_string_end+1), edlibDefaultAlignConfig());
+						ub+=fed.editDistance;
+						//cout<<"4a. "<<fed.editDistance;
+					}
+					else if(y1==pattern.length()-1)
+					{
+						
+						//cout<<"4b. "<<cur_string.substr(win_string_end+1,cur_string.length()-1-(win_string_end+1)+1)<<endl;
+						ub+=cur_string.length()-(win_string_end+1);
+					}
+					else if(win_string_end==cur_string.length()-1)
+					{
+						ub+=pattern.length()-(y1+1);
+						//cout<<"4c. "<<pattern.substr(y1+1,((pattern.length()-1-(y1+1))+1))<<endl;
+						
+					}
+				}
+			}
+			//here ub contains the upper-bound of edit distance for the string
+	   		//cout<<"ub="<<ub<<endl;
+			
+			double score_prod=ub;
+		
+			if(pq_ub.size()<K) //if I have seen <K elements
+			{
+				pq_ub.push(make_pair(score_prod,it));				
+			}
+			else
+			{				
+				
+				if(pq_ub.top().first>(score_prod))
+				{		
+					pq_ub.pop();
+					pq_ub.push(make_pair(score_prod,it));
+					
+				}			
+			}		
+			
+		}		
+		//end step 3
+		
+		total_duration += chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now()-start_time).count();	
+		
+		
+		cout<<"Pattern: "<<pattern<<endl;
+		list<INT> est_ids;
+		vector<INT> edit_distances_of_answers;   
+		while(!pq_ub.empty())
+		{
+			pair<double,INT> p=pq_ub.top();
 			
 			pair<INT, vector<unsigned char> >  v=all_strings[p.second];
 			string cur_string(v.second.begin(),v.second.end());
 			
-			INT ed = LevenshteinDistance(pattern,cur_string);
+			const char* pat_c=pattern.c_str();
+			const char* cur_c=cur_string.c_str();
+			
+			EdlibAlignResult fed=edlibAlign(pat_c,strlen(pat_c),cur_c,strlen(cur_c), edlibDefaultAlignConfig());
+			
+			INT ed = fed.editDistance;
 			edit_distances_of_answers.push_back(ed);
 			
 			est_ids.push_front(p.second);
 			
-			cout<<"Edit distance: "<<ed<<"\n";
-			cout<<"String       : "<<cur_string<<"\n";
+			cout<<"Ub: "<<p.first<<" Edit distance: "<<ed<<"\n";  //we multiply with -1 to get the real ub														
+			cout<<"Id: "<< v.first<<"     String: "<<cur_string<<"\n";
 			
-			
-			pq_est.pop();
+			sum_of_edit_distance_of_answers+=ed;
+			pq_ub.pop();
 		}
-		
 		if(est_ids.size()<K)
 		{
 			cout<<"Try a smaller K.\n";
@@ -1084,6 +1358,7 @@ int main(int argc, char** argv)
 		}	
  	} 
  
+	
  	cout << "Elapsed total time (ms) : "<<total_duration<<endl;
  	cout<< "Avg time per query (ms) : "<<(double)total_duration/all_patterns.size()<<endl;
    
@@ -1098,3 +1373,4 @@ int main(int argc, char** argv)
 	    
 	return 0;
 }
+
