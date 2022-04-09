@@ -209,7 +209,7 @@ INT lcp ( string & x, INT M, string & y, INT l )
 }
 
 /* Searching a list of strings using LCP from "Algorithms on Strings" by Crochemore et al. Algorithm takes O(m + log n), where n is the list size and m the length of pattern */
-pair<INT,INT> pattern_matching ( string & w, string & a, INT * SA, INT * LCP, std::unordered_map<pair<INT,INT>, INT, boost::hash<pair<INT,INT> >> &rmq, INT n )
+pair<INT,INT> pattern_matching ( string & w, string & a, INT * SA, std::unordered_map<pair<INT,INT>, INT, boost::hash<pair<INT,INT> >> &rmq, INT n )
 {
 	INT m = w.size(); //length of pattern
 	INT N = a.size(); //length of string
@@ -340,7 +340,7 @@ INT lcs ( string & x, INT M, string & y, INT l )
 
 
 /* Searching a list of strings using LCP from "Algorithms on Strings" by Crochemore et al. Algorithm takes O(m + log n), where n is the list size and m the length of pattern */
-pair<INT,INT> rev_pattern_matching ( string & w, string & a, INT * SA, INT * LCP, std::unordered_map<pair<INT,INT>, INT, boost::hash<pair<INT,INT> >> &rmq, INT n )
+pair<INT,INT> rev_pattern_matching ( string & w, string & a, INT * SA, std::unordered_map<pair<INT,INT>, INT, boost::hash<pair<INT,INT> >> &rmq, INT n )
 {
 	INT m = w.size(); //length of pattern
 	INT N = a.size(); //length of string
@@ -499,6 +499,7 @@ int main(int argc, char **argv)
 
  	unordered_set<INT> text_anchors;
 	string text_string(text.begin(), text.end());
+	text.clear();
 
 	if( ell < 1 || ell > text_string.size())
       	{
@@ -652,8 +653,10 @@ int main(int argc, char **argv)
 
   	cout<<"Left RMQ DS constructed "<<endl;
   	fast_RMQ ( LLCP, -1, g, g, lrmq ); //construction
+    	free ( LLCP );
   	cout<<"Right RMQ DS constructed "<<endl;
   	fast_RMQ ( RLCP, -1, g, g, rrmq ); //construction
+    	free ( RLCP );
 
     	cout<<"The whole index is constructed"<<endl;
 	
@@ -698,7 +701,7 @@ int main(int argc, char **argv)
 		if ( pattern.size() - j >= j ) //if the right part is bigger than the left part, then search the right part to get a smaller interval on RSA (on average)
 		{
   			string right_pattern = pattern.substr(j, pattern.size()-j);
-			pair<INT,INT> right_interval = pattern_matching ( right_pattern, text_string, RSA, RLCP, rrmq, g );
+			pair<INT,INT> right_interval = pattern_matching ( right_pattern, text_string, RSA, rrmq, g );
   			//cout<<"Right interval: "<<right_interval.first<<","<<right_interval.second<<endl;												
 
 			if(right_interval.first > right_interval.second)	continue;
@@ -723,7 +726,7 @@ int main(int argc, char **argv)
 		{
 			string left_pattern = pattern.substr(0, j+1);
 			reverse(left_pattern.begin(), left_pattern.end());
-			pair<INT,INT> left_interval = rev_pattern_matching ( left_pattern, text_string, LSA, LLCP, lrmq, g );
+			pair<INT,INT> left_interval = rev_pattern_matching ( left_pattern, text_string, LSA, lrmq, g );
   			//cout<<"Left interval: "<<left_interval.first<<","<<left_interval.second<<endl;												
 
 			if(left_interval.first > left_interval.second)	continue;
@@ -750,9 +753,7 @@ int main(int argc, char **argv)
   	std::chrono::steady_clock::time_point  end = std::chrono::steady_clock::now();
   	std::cout <<"Pattern matching of all patterns took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
     	free ( RSA );
-    	free ( RLCP );
     	free ( LSA );
-    	free ( LLCP );
 	delete []f;	
   	std::cout <<"Memory is cleared"<<std::endl;
 

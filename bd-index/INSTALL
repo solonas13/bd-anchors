@@ -18,5 +18,5 @@ is suitable for shorter texts and requires less memory.
 After compilation the binary `index' will be created in the working 
 directory, e.g. you may call it from this directory via
 
- S ./index ./data/text 3 ./data/patterns
+ $ ./index ./data/text 3 ./data/patterns
 
