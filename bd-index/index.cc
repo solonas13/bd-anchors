@@ -699,7 +699,7 @@ int main(int argc, char **argv)
   		INT j = minlexrot( first_window, f, ell );
   		
 		if ( pattern.size() - j >= j ) //if the right part is bigger than the left part, then search the right part to get a smaller interval on RSA (on average)
-		{
+		{ 
   			string right_pattern = pattern.substr(j, pattern.size()-j);
 			pair<INT,INT> right_interval = pattern_matching ( right_pattern, text_string, RSA, rrmq, g );
   			//cout<<"Right interval: "<<right_interval.first<<","<<right_interval.second<<endl;												
@@ -717,13 +717,12 @@ int main(int argc, char **argv)
 				}
 				if ( jj < 0 ) //we have matched the pattern completely
 				{
-					if ( index == 0 )	cout<< pattern <<" found at position "<< index << " of the text"<<endl;					
-					else			cout<< pattern <<" found at position "<< index + 1 << " of the text"<<endl;
+					cout<< pattern <<" found at position "<< index + 1 << " of the text"<<endl;
 				}					
 			}
 		}
 		else //otherwise, search the left part to get a smaller interval on LSA (on average)
-		{
+		{ 
 			string left_pattern = pattern.substr(0, j+1);
 			reverse(left_pattern.begin(), left_pattern.end());
 			pair<INT,INT> left_interval = rev_pattern_matching ( left_pattern, text_string, LSA, lrmq, g );
@@ -741,7 +740,7 @@ int main(int argc, char **argv)
 					index++; jj++;
 				}
 				if ( jj == pattern.size() ) //we have matched the pattern completely
-				{
+				{ 
 					if ( index == n - 1 )	cout<< pattern <<" found at position "<< index - pattern.size() + 1 << " of the text"<<endl;					
 					else			cout<< pattern <<" found at position "<<  index - pattern.size() << " of the text"<<endl;
 				}
