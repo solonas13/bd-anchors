@@ -13,7 +13,7 @@ We inject bd-anchors in two problems:
 
 <b>Indexing for On-Line Pattern Searches</b>: Our index has size <b>n</b> bytes + <b>O(|A|)</b> words and supports <b>locate</b> operations for any pattern of length at least <b>ℓ</b> in near-optimal time (<b>bd-index-grid</b>) --- the time supported in the <b>bd-index</b> implementation is not bounded. To compile the program, change to directory <b>bd-index</b> and follow the instructions given in file INSTALL.
 
-<b>Top-K Similarity Search under Edit Distance</b>: To compile the program, change to directory <b>bd-search</b> and follow the instructions given in file INSTALL.
+<b>Top-K Similarity Search under Edit Distance</b>: To compile the program, change to directory <b>bd-search</b> or <b>bd-index-grid</b> and follow the instructions given in file INSTALL.
 
 When publishing work that is based on the results from bd-anchors please cite:
 ```
