@@ -1,0 +1,21 @@
+Pre-installation Instructions
+=============================
+
+   This installation requires the pre-installation of the cmake tool,
+a C++ compiler, and the libraries: libdivsufsort, sdsl, and boost.
+
+For Linux, you can install libraries libdivsufsort, sdsl, and boost via
+
+ $ ./pre-install.sh 
+
+Basic Instructions
+==================
+
+   The shell command `make -f Makefile.64-bit.gcc' should compile this 
+program. You can use `make -f Makefile.32-bit.gcc' instead. The latter
+is suitable for shorter texts and requires less memory.
+
+After compilation the binary `index' will be created in the working 
+directory, e.g. you may call it from this directory via
+
+ $ ./index ./data/text 3 ./data/patterns
