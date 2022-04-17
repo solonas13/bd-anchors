@@ -557,11 +557,22 @@ int main(int argc, char** argv)
   		fprintf(stderr, " Error: Cannot allocate memory for SA.\n" );
         	return ( 0 );
   	}
+
+	#ifdef _USE_64
   	if( divsufsort64( seq, SA,  n ) != 0 )
   	{
   		fprintf(stderr, " Error: SA computation failed.\n" );
           	exit( EXIT_FAILURE );
   	}
+	#endif
+
+	#ifdef _USE_32
+  	if( divsufsort( seq, SA,  n ) != 0 )
+  	{
+  		fprintf(stderr, " Error: SA computation failed.\n" );
+          	exit( EXIT_FAILURE );
+  	}
+	#endif
   
   	/*Compute the inverse SA array */
   	invSA = ( INT * ) calloc( n , sizeof( INT ) );
@@ -614,11 +625,21 @@ int main(int argc, char** argv)
   	/* We reverse the string for the left direction and also overwrite all other DSs */
   	reverse(text_string.begin(), text_string.end());
   
+	#ifdef _USE_64
   	if( divsufsort64( seq, SA,  n ) != 0 )
   	{
   		fprintf(stderr, " Error: SA computation failed.\n" );
           	exit( EXIT_FAILURE );
   	}
+	#endif
+
+	#ifdef _USE_32
+  	if( divsufsort( seq, SA,  n ) != 0 )
+  	{
+  		fprintf(stderr, " Error: SA computation failed.\n" );
+          	exit( EXIT_FAILURE );
+  	}
+	#endif
   
   	for ( INT i = 0; i < n; i ++ )
   	{
