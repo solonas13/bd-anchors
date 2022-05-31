@@ -11,7 +11,7 @@ Our experiments using several datasets show that the bd-anchors sample sizes dec
 
 We inject bd-anchors in two problems:
 
-<b>Indexing for On-Line Pattern Searches</b>: Our index has size <b>n</b> bytes + <b>O(|A|)</b> words and supports <b>locate</b> operations for any pattern of length at least <b>ℓ</b> in near-optimal time (<b>bd-index-grid</b>) --- the time supported in the <b>bd-index</b> implementation is not bounded but in practice this implementation is much faster. To compile the program, change to directory <b>bd-index</b> or <b>bd-index-grid</b> and follow the instructions given in file INSTALL.
+<b>Indexing for On-Line Pattern Searches</b>: Our index has size <b>n</b> bytes + <b>O(|A|)</b> words and supports <b>locate</b> operations for any pattern of length at least <b>ℓ</b> in near-optimal time (<b>bd-index-grid</b>) --- the time supported in the <b>bd-index</b> implementation is not bounded but in practice this implementation is faster. To compile the program, change to directory <b>bd-index</b> or <b>bd-index-grid</b> and follow the instructions given in file INSTALL.
 
 <b>Top-K Similarity Search under Edit Distance</b>: To compile the program, change to directory <b>bd-search</b>  and follow the instructions given in file INSTALL.
 
