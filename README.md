@@ -9,7 +9,7 @@ Our experiments using several datasets show that the bd-anchors sample sizes dec
 
 <b>Constructing the Sample</b>: Our current implementation takes <b>O(nℓ)</b> time. To compile the program, change to directory <b>bd-construct</b> and follow the instructions given in file INSTALL. 
 
-We inject bd-anchors in two problems:
+We inject <b>bd-anchors</b> in two problems:
 
 <b>Indexing for On-Line Pattern Searches</b>: Our index has size <b>n</b> bytes + <b>O(|A|)</b> integers and supports <b>locate</b> operations for any pattern of length at least <b>ℓ</b> in near-optimal time (<b>bd-index-grid</b>) --- the time supported in the <b>bd-index</b> implementation is not bounded but in practice this implementation is faster. To compile the program, change to directory <b>bd-index</b> or <b>bd-index-grid</b> and follow the instructions given in file INSTALL.
 
