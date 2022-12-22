@@ -19,7 +19,7 @@ When publishing work that is based on the results from bd-anchors please cite:
 ```
 G. Loukides, S. P. Pissis, M. Sweering:
 Bidirectional String Anchors for Improved Text Indexing and Top-K Similarity Search. 
-{IEEE} Trans. Knowl. Data Eng. DOI: 10.1109/TKDE.2022.3231780
+IEEE Trans. Knowl. Data Eng. DOI: 10.1109/TKDE.2022.3231780
 ```
 ```
 G. Loukides and S. P. Pissis:
