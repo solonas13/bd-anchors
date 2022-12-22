@@ -24,7 +24,7 @@ IEEE Trans. Knowl. Data Eng. DOI: 10.1109/TKDE.2022.3231780
 ```
 G. Loukides and S. P. Pissis:
 Bidirectional String Anchors: a New String Sampling Mechanism. 
-ESA 2021: 64:1-64:21
+ESA 2021: 64:1-64:21. DOI: 10.4230/LIPIcs.ESA.2021.64
 ```
 
 <b>License</b>: GNU GPLv3 License; Copyright (C) 2021 Grigorios Loukides and Solon P. Pissis.
