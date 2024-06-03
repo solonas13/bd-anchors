@@ -16,6 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
+#include <cstdint>
+
 #ifdef _USE_64
 typedef int64_t INT;
 #endif
